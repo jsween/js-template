@@ -3705,8 +3705,15 @@ exports.Alarm.prototype.triggerAlarm = function(currentTime, setTime) {
 },{}],3:[function(require,module,exports){
 var Alarm = require('./../js/alarm.js').Alarm;
 var moment = require('moment');
+var apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
 
 $(document).ready(function(){
+
+  $.get('http://api.openweathermap.org/data/2.5/weather?q=Portland,OR' + '&appid=' + apiKey, function(response) {
+      console.log(response);
+  $('.showWeather').text("The humidity in portland  is " + response.main.humidity + "%");
+  });
+
   var timer = setInterval(function(){
   var current_time = moment().format("hh:mm");
   $('#time').text(moment().format("hh:mm:ss"));
@@ -3735,5 +3742,21 @@ $(document).ready(function(){
     }
     }, 500);
   });
+
+
+var apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
+
+$(document).ready(function(){
+  $.get('http://api.openweathermap.org/data/2.5/weather?q=Portland,OR' + '&appid=' + apiKey, function(response) {
+      console.log(response);
+  $('.showWeather').text("The humidity in portland  is " + response.main.humidity + "%");
+  });
+  // $('#weatherLocation').click(function(){
+  //   var city = $('#location').val();
+  //   $('#location').val("");
+  //
+  //
+  // });
+});
 
 },{"./../js/alarm.js":1,"moment":2}]},{},[3]);
