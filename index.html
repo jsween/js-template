@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="build/css/vendor.css">
+      <script src="build/js/vendor.min.js"></script>
+      <script src="bower_components/moment/min/moment.min.js"></script>
+      <script type="text/javascript" src="build/js/app.js"></script>
+    <title>Alarm Clock</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Alarm Clock</h1>
+      </div>
+      <div class="col-sm-6">
+        <form id="clock">
+          <label for="set_time">Set Alarm:</label>
+          <input id="set_time" type="time">
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+      <div class="col-sm-6">
+        <h2 id="alarm_set"></h2>
+        <h2 id="date"></h2>
+        <h3>Well look at the time! </h3>
+        <h3 id="time"></h3>
+        <h3 id="your_set_time">Your alarm is set for: </h3>
+        <div class="result">
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
