@@ -1,5 +1,5 @@
 {
-  "name": "alarm_clock",
+  "name": "template",
   "version": "1.0.0",
   "description": "an awesome alarm clock",
   "main": "gulpfile.js",

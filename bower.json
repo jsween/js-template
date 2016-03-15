@@ -1,6 +1,6 @@
 {
-  "name": "alarm_clock",
-  "description": "an awesome alarm clock",
+  "name": "template",
+  "description": "default",
   "main": "gulpfile.js",
   "license": "ISC",
   "moduleType": [],
