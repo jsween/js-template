@@ -65,7 +65,7 @@ $(document).ready(function(){
         if(alarm_temp) {
           $(".temp_result").html("<iframe width='420' height='315' src='https://www.youtube.com/embed/GeZZr_p6vB8?rel=0&amp;autoplay=1' frameborder='0' allowfullscreen></iframe>");
         } else {
-          $(".temp_result").hide();
+          $(".temp_result").html("<iframe width='420' height='315' src='https://www.youtube.com/embed/OkYSt9AOwhM?rel=0&amp;autoplay=1' frameborder='0' allowfullscreen></iframe>");         
         }
         // $('#temp').submit(function(event){
         //   event.preventDefault();
