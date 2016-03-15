@@ -7,7 +7,7 @@ $(document).ready(function(){
 
 
   var timer = setInterval(function(){
-  var current_time = moment().format("hh:mm");
+  var current_time = moment().format("HH:mm");
   $('#time').text(moment().format("hh:mm:ss"));
   var set_time = $('#set_time').val();
   var alarm = new Alarm(current_time, set_time);

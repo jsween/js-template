@@ -14,6 +14,29 @@ exports.Alarm.prototype.triggerAlarm = function(currentTime, setTime) {
 };
 
 },{}],2:[function(require,module,exports){
+exports.Temperature = function(kTemp, setTemp) {
+  this.kTemp = kTemp;
+  this.setTemp = setTemp;
+};
+
+exports.Temperature.prototype.convertTemp = function(kTemp) {
+  var c = kTemp - 273.15;
+  var f = c * 1.8 + 32;
+
+  return f.toFixed(2);
+};
+
+exports.Temperature.prototype.tempAlarm = function(kTemp, setTemp) {
+  if (kTemp === setTemp) {
+    return true;
+  } else {
+    return false;
+  }
+};
+//C = K -273.15
+//F = C*1.8 + 32
+
+},{}],3:[function(require,module,exports){
 //! moment.js
 //! version : 2.12.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -3702,7 +3725,7 @@ exports.Alarm.prototype.triggerAlarm = function(currentTime, setTime) {
     return _moment;
 
 }));
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var Alarm = require('./../js/alarm.js').Alarm;
 var moment = require('moment');
 var apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
@@ -3712,7 +3735,7 @@ $(document).ready(function(){
 
 
   var timer = setInterval(function(){
-  var current_time = moment().format("hh:mm");
+  var current_time = moment().format("HH:mm");
   $('#time').text(moment().format("hh:mm:ss"));
   var set_time = $('#set_time').val();
   var alarm = new Alarm(current_time, set_time);
@@ -3740,23 +3763,42 @@ $(document).ready(function(){
     }, 500);
   });
 
-
+var Temperature = require('./../js/temperature.js').Temperature;
 var apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
 
 $(document).ready(function(){
   $.get('http://api.openweathermap.org/data/2.5/weather?q=Portland,OR' + '&appid=' + apiKey, function(response) {
-      console.log(response);
-  $('.showWeather').text("The humidity in portland  is " + response.main.humidity + "%, and the temperature is " + response.main.temp + " degrees.");
+
+
+      var kTemp = response.main.temp;
+      var newTemp = new Temperature(kTemp);
+      var fahr = newTemp.convertTemp(kTemp);
+
+
+      $('.showWeather').text("The humidity in portland  is " + response.main.humidity + "%, and the temperature is " + fahr + " degrees.");
+
+
+
+
+      $('#temp').submit(function(event){
+        event.preventDefault();
+        var set_temp = $('#set_temp').val();
+        var alarm_temp = newTemp.tempAlarm(fahr, set_temp);
+        $('#your_set_temp').html("<h3> Your temperature alarm is set for "+ set_temp +" degrees.</h3>");
+        console.log(set_temp);
+        console.log(fahr);
+          if(alarm_temp) {
+            $(".temp_result").html("<iframe width='420' height='315' src='https://www.youtube.com/embed/GeZZr_p6vB8?rel=0&amp;autoplay=1' frameborder='0' allowfullscreen></iframe>");
+          } else {
+            console.log('broken');
+          }
+      });
+
+
   });
-  // $('#weatherLocation').click(function(){
-  //   var city = $('#location').val();
-  //   $('#location').val("");
-  //
-  //
-  // });
 });
 
 //C = K -273.15
 //F = C*1.8 + 32
 
-},{"./../js/alarm.js":1,"moment":2}]},{},[3]);
+},{"./../js/alarm.js":1,"./../js/temperature.js":2,"moment":3}]},{},[4]);
