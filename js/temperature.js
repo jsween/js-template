@@ -11,7 +11,7 @@ exports.Temperature.prototype.convertTemp = function(kTemp) {
 };
 
 exports.Temperature.prototype.tempAlarm = function(kTemp, setTemp) {
-  if (kTemp === setTemp) {
+  if (kTemp >= setTemp) {
     return true;
   } else {
     return false;

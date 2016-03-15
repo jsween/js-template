@@ -1,4 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+exports.apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
+
+},{}],2:[function(require,module,exports){
 exports.Alarm = function(currentTime, setTime) {
   this.currentTime = currentTime;
   this.setTime = setTime;
@@ -13,7 +16,7 @@ exports.Alarm.prototype.triggerAlarm = function(currentTime, setTime) {
   }
 };
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 exports.Temperature = function(kTemp, setTemp) {
   this.kTemp = kTemp;
   this.setTemp = setTemp;
@@ -27,7 +30,7 @@ exports.Temperature.prototype.convertTemp = function(kTemp) {
 };
 
 exports.Temperature.prototype.tempAlarm = function(kTemp, setTemp) {
-  if (kTemp === setTemp) {
+  if (kTemp >= setTemp) {
     return true;
   } else {
     return false;
@@ -36,7 +39,7 @@ exports.Temperature.prototype.tempAlarm = function(kTemp, setTemp) {
 //C = K -273.15
 //F = C*1.8 + 32
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 //! moment.js
 //! version : 2.12.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -3725,7 +3728,7 @@ exports.Temperature.prototype.tempAlarm = function(kTemp, setTemp) {
     return _moment;
 
 }));
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var Alarm = require('./../js/alarm.js').Alarm;
 var moment = require('moment');
 var apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
@@ -3733,10 +3736,13 @@ var apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
 $(document).ready(function(){
 
 
-
+  $('#date').text(moment().format("dddd, MMMM Do YYYY"));
+  setInterval(function(){
+  $('#time').text(moment().format("hh:mm:ss"));
+  }, 500);
   var timer = setInterval(function(){
   var current_time = moment().format("HH:mm");
-  $('#time').text(moment().format("hh:mm:ss"));
+
   var set_time = $('#set_time').val();
   var alarm = new Alarm(current_time, set_time);
   var alarm_sound = alarm.triggerAlarm(current_time, set_time);
@@ -3751,7 +3757,7 @@ $(document).ready(function(){
       $(".result").html("<iframe width='420' height='315' src='https://www.youtube.com/embed/pIgZ7gMze7A?rel=0&amp;autoplay=1' frameborder='0' allowfullscreen></iframe>");
       clearInterval(timer);
     }
-    $('#date').text(moment().format("dddd, MMMM Do YYYY, h:mm:ss a"));
+
     $('#your_set_time').html("<h3> Your alarm is set for "+ set_time +"</h3>");
     console.log(current_time);
     console.log(set_time);
@@ -3764,19 +3770,23 @@ $(document).ready(function(){
   });
 
 var Temperature = require('./../js/temperature.js').Temperature;
-var apiKey = "adfb6c08f301ba43007da5fb6b0c50b9";
+var apiKey = require('./../.env').apiKey;
 
 $(document).ready(function(){
-  $.get('http://api.openweathermap.org/data/2.5/weather?q=Portland,OR' + '&appid=' + apiKey, function(response) {
-
-
+  var tempArr = [];
+  $.get('http://api.openweathermap.org/data/2.5/weather?q=Portland,OR' + '&appid=' + apiKey).then(function(response) {
       var kTemp = response.main.temp;
       var newTemp = new Temperature(kTemp);
       var fahr = newTemp.convertTemp(kTemp);
+      var humidity = response.main.humidity;
+      var wind = response.wind.speed;
 
 
-      $('.showWeather').text("The humidity in portland  is " + response.main.humidity + "%, and the temperature is " + fahr + " degrees.");
+      $('.showWeather').text("The humidity in portland  is " + humidity + "%, the temperature is " + fahr + " degrees, and the wind speed is " + wind +".");
 
+      if(humidity > 80 || wind > 3) {
+        $('.weatherPic').append("<p><img src='../images/cloud.svg' class='icon'></p> <p><img src='../images/weather.svg' class='icon'></p>")
+      }
 
 
 
@@ -3785,20 +3795,69 @@ $(document).ready(function(){
         var set_temp = $('#set_temp').val();
         var alarm_temp = newTemp.tempAlarm(fahr, set_temp);
         $('#your_set_temp').html("<h3> Your temperature alarm is set for "+ set_temp +" degrees.</h3>");
-        console.log(set_temp);
-        console.log(fahr);
           if(alarm_temp) {
             $(".temp_result").html("<iframe width='420' height='315' src='https://www.youtube.com/embed/GeZZr_p6vB8?rel=0&amp;autoplay=1' frameborder='0' allowfullscreen></iframe>");
           } else {
-            console.log('broken');
+            tempArr.unshift(set_temp);
           }
+
       });
 
 
+  }).fail(function(error){
+    $('.showWeather').text(error.responseJSON.message);
+  });
+
+  $('form#search').submit(function(event){
+    console.log(tempArr[0]);
+    event.preventDefault();
+    var city = $('#city').val();
+
+    $.get('http://api.openweathermap.org/data/2.5/weather?q='+ city + '&appid=' + apiKey).then(function(response) {
+        var kTemp = response.main.temp;
+        var newTemp = new Temperature(kTemp);
+        var fahr = newTemp.convertTemp(kTemp);
+        var humidity = response.main.humidity;
+        var wind = response.wind.speed;
+
+
+        $('.showWeather').text("The humidity in " + city + " is " + humidity + "%, the temperature is " + fahr + " degrees, and the wind speed is " + wind +".");
+
+        if(humidity > 40 || wind > 3) {
+          $('.weatherPic').html("<p><img src='../images/cloud.svg' class='icon'></p> <p><img src='../images/weather.svg' class='icon'></p>")
+        } else {
+          $('.weatherPic').html("<p><img src='../images/summer.svg' class='icon'></p>");
+        }
+
+        var set_temp = tempArr[0];
+
+        var alarm_temp = newTemp.tempAlarm(fahr, set_temp);
+        $('#your_set_temp').html("<h3> Your temperature alarm is set for "+ set_temp +" degrees.</h3>");
+        if(alarm_temp) {
+          $(".temp_result").html("<iframe width='420' height='315' src='https://www.youtube.com/embed/GeZZr_p6vB8?rel=0&amp;autoplay=1' frameborder='0' allowfullscreen></iframe>");
+        } else {
+          $(".temp_result").hide();
+        }
+        // $('#temp').submit(function(event){
+        //   event.preventDefault();
+        //   set_temp = $('#set_temp').val();
+        //   var alarm_temp = newTemp.tempAlarm(fahr, set_temp);
+        //   $('#your_set_temp').html("<h3> Your temperature alarm is set for "+ set_temp +" degrees.</h3>");
+        //     if(alarm_temp) {
+        //       $(".temp_result").html("<iframe width='420' height='315' src='https://www.youtube.com/embed/GeZZr_p6vB8?rel=0&amp;autoplay=1' frameborder='0' allowfullscreen></iframe>");
+        //     } else {
+        //       console.log('broken');
+        //     }
+        // });
+
+
+    }).fail(function(error){
+      $('.showWeather').text(error.responseJSON.message);
+    });
   });
 });
 
 //C = K -273.15
 //F = C*1.8 + 32
 
-},{"./../js/alarm.js":1,"./../js/temperature.js":2,"moment":3}]},{},[4]);
+},{"./../.env":1,"./../js/alarm.js":2,"./../js/temperature.js":3,"moment":4}]},{},[5]);

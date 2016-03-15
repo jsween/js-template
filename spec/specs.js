@@ -44,7 +44,7 @@ describe("Temperature", function() {
     expect(testTemperature.tempAlarm(fahr, setTemp)).to.equal(true);
   });
   it ("will trigger a freakish alarm", function(){
-    var kTemp = 280.50;
+    var kTemp = 43.50;
     var setTemp = 46;
     var testTemperature = new Temperature(kTemp, setTemp);
     expect(testTemperature.tempAlarm(kTemp, setTemp)).to.equal(false);
