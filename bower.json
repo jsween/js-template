@@ -4,7 +4,7 @@
   "main": "gulpfile.js",
   "license": "ISC",
   "moduleType": [],
-  "homepage": "https://github.com/jos-h20/js-template",
+  "homepage": "https://github.com/jsween/github_api",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -18,6 +18,6 @@
     "moment": "^2.12.0"
   },
   "authors": [
-    "jos-h20 <josh_overly@yahoo.com>"
+    "Jon Sweeney <jonsweeney26@gmail.com>"
   ]
 }
